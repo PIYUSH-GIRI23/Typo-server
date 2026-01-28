@@ -39,10 +39,36 @@ const updateUserData = async (username, updates) => {
   return merged;
 };
 
+//provided array (of objects) under key `leaderboard`.
+const setLeaderboard = async (arrayValue) => {
+  const redis = await connectRedis();
+  const key = 'leaderboard';
+  if (!Array.isArray(arrayValue)) {
+    throw new Error('Leaderboard value must be an array');
+  }
+  await redis.set(key, JSON.stringify(arrayValue));
+  return arrayValue;
+};
+
+const getLeaderboard = async () => {
+  const redis = await connectRedis();
+  const key = 'leaderboard';
+  const raw = await redis.get(key);
+  if (!raw) return [];
+  try {
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
+  }
+};
+
 
 export {
   isUsernamePresent,
   deleteUsernameKey,
   setUserData,
   updateUserData,
+  setLeaderboard,
+  getLeaderboard,
 };

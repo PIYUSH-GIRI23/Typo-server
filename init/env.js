@@ -27,12 +27,13 @@ export const env = {
     },
     
     para: {
+        max: parseInt(process.env.MAX_PARA) || 10,
         quote: process.env.QUOTE_KEY || 'qo',
         wordEasyShort: process.env.WORD_KEY_EASY_SHORT || 'wes',
         wordEasyLong: process.env.WORD_KEY_EASY_LONG || 'wel',
-        wordLongShort: process.env.WORD_KEY_LONG_SHORT || 'wls',
-        wordLongLong: process.env.WORD_KEY_LONG_LONG || 'wll'
-    },|| 'defaultsecret',
+        wordHardShort: process.env.WORD_KEY_HARD_SHORT || 'whs',
+        wordHardLong: process.env.WORD_KEY_HARD_LONG || 'whl'
+    },
     
     redis: {
         host: isDevelopment ? process.env.LOCAL_REDIS_HOST : process.env.CLOUD_REDIS_HOST,
