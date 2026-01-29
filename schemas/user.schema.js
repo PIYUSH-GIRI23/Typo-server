@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { USERNAME_REGEX, EMAIL_REGEX, PASSWORD_REGEX } from "../utils/regexValidation.js";
+import regex from "../utils/regexValidation.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 20,
       validate: {
-        validator: (value) => USERNAME_REGEX.test(value),
+        validator: (value) => regex.USERNAME_REGEX.test(value),
         message: (props) => `${props.value} is not a valid username!`
       },
       index: true
@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       validate: {
-        validator: (value) => EMAIL_REGEX.test(value),
+        validator: (value) => regex.EMAIL_REGEX.test(value),
         message: (props) => `${props.value} is not a valid email!`
       }
     },
@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
       maxlength: 50,
       validate: {
-        validator: (value) => PASSWORD_REGEX.test(value),
+        validator: (value) => regex.PASSWORD_REGEX.test(value),
         message: () => `Password does not meet complexity rules!`
       }
     },

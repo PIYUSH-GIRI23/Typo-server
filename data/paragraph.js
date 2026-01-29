@@ -50,4 +50,5 @@ const hardLongPara = [
 	"History records many long efforts and the reader who studies them will see how small steady choices arranged over years produce outcomes that appear sudden only in retrospect and the patient study of those choices gives wise guidance for present planners who must work through complex uncertain times with steady modest effort and clear aims."
 ]
 
-export {easyShortPara, easyLongPara, hardShortPara, hardLongPara}
+const paragaph= {easyShortPara, easyLongPara, hardShortPara, hardLongPara}
+export default paragaph;

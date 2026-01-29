@@ -1,4 +1,4 @@
-import { generateTokens , renewJWT, verifyToken} from './jwt.js';
+import jwt from './jwt.js';
 
 export const middleware = async(req,res,next)=>{
     try{
@@ -7,11 +7,11 @@ export const middleware = async(req,res,next)=>{
         if(!token){
             return res.status(401).json({ message: 'Unauthorized - No token provided' });
         }
-        let verification = await verifyToken(token.access_token);
+        let verification = await jwt.verifyToken(token.access_token);
 
         if (!verification.valid && verification.expired) {
             try {
-                const newTokens = await renewJWT(token.refresh_token);
+                const newTokens = await jwt.renewJWT(token.refresh_token);
                 res.set('New-Access-Token', newTokens.accessToken);
                 res.set('New-Refresh-Token', newTokens.refreshToken);
             }

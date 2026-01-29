@@ -11,4 +11,4 @@ const quotes = [
 	"Share your work with others seek honest feedback and use that guidance to refine your craft and expand what you can achieve"
 ]
 
-export {quotes}
+export default quotes;

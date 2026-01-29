@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {env} from '../init/env.js';
 
-export const generateTokens = (payload, rememberMe = false) => {
+const generateTokens = (payload, rememberMe = false) => {
     try {
         if (!payload || !payload.userId) throw new Error('Payload with userId required for token generation');
 
@@ -37,7 +37,7 @@ export const generateTokens = (payload, rememberMe = false) => {
     }
 };
 
-export const verifyToken = async (token) => {
+const verifyToken = async (token) => {
     try {
         if (!token) throw new Error('Token is required for verification');
 
@@ -77,7 +77,7 @@ export const verifyToken = async (token) => {
 };
 
 
-export const renewJWT = async (refreshToken, rememberMe = false) => {
+const renewJWT = async (refreshToken, rememberMe = false) => {
     try {
         if (!refreshToken) throw new Error('Refresh token is required');
 
@@ -97,8 +97,9 @@ export const renewJWT = async (refreshToken, rememberMe = false) => {
     }
 };
 
-export default {
+const jwt = {
     generateTokens,
     verifyToken,
     renewJWT
 };
+export default jwt;
