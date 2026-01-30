@@ -1,6 +1,6 @@
-import AppError from "../utils/AppError.js";
+import AppError from "../error/AppError.js";
 import analyticsService from "../services/analytics.service.js";
-import errorHandler from "../utils/errorHandler.js";
+import errorHandler from "../error/errorHandler.js";
 
 const getUserAnalytics = async(req, res, next) => {
     try {
