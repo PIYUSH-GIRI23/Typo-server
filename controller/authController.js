@@ -5,6 +5,8 @@ import jwt from '../auth/jwt.js';
 import authService from "../services/auth.service.js";
 import { setUsername } from "../redis/user.js";
 import { validateLoginInput, validateRegisterInput } from "../utils/authValidation.js";
+import { pushMailQueue } from "../queue/mailQueue.js";
+import formatDateTime from "../utils/formatDateTIme.js";
 
 const loginUser = async(req, res, next) => {
     try{
@@ -87,6 +89,8 @@ const registerUser = async(req, res, next) => {
         });
 
         await setUsername(username);
+
+        await pushMailQueue(email, "signup", formatDateTime(Date.now()), 8);
 
         const tokens = jwt.generateTokens({ userId: user._id }, rememberMe);
 

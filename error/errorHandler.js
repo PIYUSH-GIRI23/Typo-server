@@ -48,6 +48,22 @@ const errorHandler = (err) => {
     return new AppError("Database connection error", 503);
   }
 
+  // Redis Errors
+  if (err.name === "ReplyError" || err.name === "AbortError" || err.name === "RedisError") {
+    return new AppError("Redis error occurred", 503);
+  }
+  if (err.code === "ECONNREFUSED" && err.message && err.message.toLowerCase().includes("redis")) {
+    return new AppError("Redis connection refused", 503);
+  }
+
+  // RabbitMQ Errors
+  if (err.message && err.message.toLowerCase().includes("amqp")) {
+    return new AppError("RabbitMQ error occurred", 503);
+  }
+  if (err.code === "ECONNREFUSED" && err.message && err.message.toLowerCase().includes("rabbit")) {
+    return new AppError("RabbitMQ connection refused", 503);
+  }
+
   // SyntaxError - JSON parsing error
   if (err instanceof SyntaxError) {
     return new AppError("Invalid JSON format", 400);

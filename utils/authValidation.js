@@ -64,6 +64,14 @@ const validateRegisterInput = (payload) => {
   return { success: true, data: result.data };
 };
 
+const validateEmail = (email) => {
+  const result = emailSchema.safeParse(email);
+  if (!result.success) {
+    return { success: false, message: formatZodError(result.error) };
+  }
+  return { success: true, data: result.data };
+};
+
 const validateUsername = (username) => {
   const result = usernameSchema.safeParse(username);
   if (!result.success) {
@@ -84,9 +92,25 @@ const validateDeleteAccountInput = (payload) => {
   return { success: true, data: result.data };
 };
 
+const validateResetPasswordInput = (payload) => {
+  const schema = z.object({
+    email: emailSchema,
+    otp: z.string().min(6, "OTP is required").max(6, "OTP is required"),
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  });
+  const result = schema.safeParse(payload);
+  if (!result.success) {
+    return { success: false, message: formatZodError(result.error) };
+  }
+  return { success: true, data: result.data };
+};
+
 export { 
   validateLoginInput, 
   validateRegisterInput, 
+  validateEmail,
   validateUsername, 
-  validateDeleteAccountInput 
+  validateDeleteAccountInput,
+  validateResetPasswordInput
 };
