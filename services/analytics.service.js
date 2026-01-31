@@ -31,6 +31,41 @@ const getAnalytics = async (userId) => {
 const updateAnalytics = async (userId, payload) => {
   const { wpm, accuracy, testTimings, maxStreak, lastTestTaken } = payload;
 
+  const today = new Date().toISOString().split('T')[0];
+  const currentAnalytics = await Analytics.findOne({ userId });
+
+  if (!currentAnalytics) return null;
+  
+  let updatedProgress = [...currentAnalytics.progress];
+  
+  const lastEntry = updatedProgress[updatedProgress.length - 1];
+  const isFirstTestToday = !lastEntry || lastEntry.date !== today;
+
+  if (isFirstTestToday) {
+    const newEntry = { 
+      date: today, 
+      wpm, 
+      accuracy, 
+      count: 1 
+    };
+    
+    if (updatedProgress.length >= 10) {
+      updatedProgress.shift();
+    }
+    
+    updatedProgress.push(newEntry);
+  }
+  else {
+    // Update today's entry (last entry) with cumulative average
+    const existingEntry = updatedProgress[updatedProgress.length - 1];
+    
+    const newCount = existingEntry.count + 1;
+    existingEntry.wpm = (existingEntry.wpm * existingEntry.count + wpm) / newCount;
+    existingEntry.accuracy = (existingEntry.accuracy * existingEntry.count + accuracy) / newCount;
+    existingEntry.count = newCount;
+  }
+
+  // Update analytics with new progress
   const analytics = await Analytics.findOneAndUpdate(
     { userId },
     {
@@ -39,6 +74,7 @@ const updateAnalytics = async (userId, payload) => {
       testTimings,
       maxStreak,
       lastTestTaken,
+      progress: updatedProgress,
       $inc: { totalPar: 1 }
     },
     { new: true, runValidators: true }

@@ -38,7 +38,31 @@ const analyticsSchema = new mongoose.Schema(
         type: Number, 
         default: 0, 
         min: 0 
-    }
+    },
+    progress: [
+      {
+        date: {
+          type: String, // YYYY-MM-DD
+          required: true
+        },
+        wpm: {
+          type: Number,
+          default: 0,
+          min: 0
+        },
+        accuracy: {
+          type: Number,
+          default: 0,
+          min: 0,
+          max: 100
+        },
+        count: {
+          type: Number,
+          default: 1,
+          min: 1
+        }
+      }
+    ]
   },
   {
     timestamps: false
