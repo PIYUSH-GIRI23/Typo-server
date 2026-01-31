@@ -6,6 +6,7 @@ let channel = null;
 
 const MAIL_QUEUE = "mailQueue";
 const USER_QUEUE = "userQueue";
+const PARAGRAPH_QUEUE = "paragraphQueue";
 
 const connectMQ = async () => {
   if (channel) return channel;
@@ -20,6 +21,7 @@ const connectMQ = async () => {
 
   await channel.assertQueue(MAIL_QUEUE, { durable: true, maxPriority: 10 });
   await channel.assertQueue(USER_QUEUE, { durable: true, maxPriority: 10 });
+  await channel.assertQueue(PARAGRAPH_QUEUE, { durable: true, maxPriority: 10 });
 
   return channel;
 };
@@ -37,11 +39,10 @@ const stopMQ = async () => {
   connection = null;
 };
 
-const setupSignalHandlers = () => {
+const setupMQSignalHandlers = () => {
   const shutdown = async (signal) => {
     console.log(`Received ${signal}, shutting down RabbitMQ gracefully...`);
     await stopMQ();
-    process.exit(0);
   };
 
   process.on("SIGINT", () => shutdown("SIGINT"));
@@ -51,7 +52,8 @@ const setupSignalHandlers = () => {
 export {
   connectMQ,
   stopMQ,
-  setupSignalHandlers,
+  setupMQSignalHandlers,
   MAIL_QUEUE,
   USER_QUEUE,
+  PARAGRAPH_QUEUE,
 };

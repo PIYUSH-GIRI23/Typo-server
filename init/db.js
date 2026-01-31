@@ -33,15 +33,14 @@ const closeConnection = async () => {
   }
 };
 
-const setupSignalHandlers = () => {
+const setupDBSignalHandlers = () => {
   const shutdown = async (signal) => {
-    console.log(`Received ${signal}, shutting down gracefully...`);
+    console.log(`Received ${signal}, shutting down DB gracefully...`);
     await closeConnection();
-    process.exit(0);
   };
 
   process.on('SIGINT', () => shutdown('SIGINT'));
   process.on('SIGTERM', () => shutdown('SIGTERM'));
 };
 
-export { connectDB, getDatabase, closeConnection, setupSignalHandlers };
+export { connectDB, getDatabase, closeConnection, setupDBSignalHandlers };

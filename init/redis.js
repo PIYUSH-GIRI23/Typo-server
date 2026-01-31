@@ -32,7 +32,6 @@ const setupRedisSignalHandlers = () => {
   const shutdown = async (signal) => {
     console.log(`Received ${signal}, shutting down Redis gracefully...`);
     await stopRedis();
-    process.exit(0);
   };
 
   process.on("SIGINT", () => shutdown("SIGINT"));
