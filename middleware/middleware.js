@@ -1,17 +1,17 @@
-import jwt from '../auth/jwt.js';
+import jwtHelper from '../auth/jwt.js';
 
-export const middleware = async(req,res,next)=>{
+const middleware = async(req,res,next)=>{
     try{
         const token = JSON.parse(req.headers['token']);
 
         if(!token){
             return res.status(401).json({ message: 'Unauthorized - No token provided' });
         }
-        let verification = await jwt.verifyToken(token.access_token);
+        let verification = await jwtHelper.verifyToken(token.access_token);
 
         if (!verification.valid && verification.expired) {
             try {
-                const newTokens = await jwt.renewJWT(token.refresh_token);
+                const newTokens = await jwtHelper.renewJWT(token.refresh_token);
                 res.set('New-Access-Token', newTokens.accessToken);
                 res.set('New-Refresh-Token', newTokens.refreshToken);
             }
@@ -37,3 +37,5 @@ export const middleware = async(req,res,next)=>{
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
+export default middleware;

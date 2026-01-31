@@ -29,8 +29,7 @@ const userSchema = new mongoose.Schema(
       validate: {
         validator: (value) => regex.USERNAME_REGEX.test(value),
         message: (props) => `${props.value} is not a valid username!`
-      },
-      index: true
+      }
     },
 
     email: {
@@ -72,8 +71,5 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Additional indexes
-userSchema.index({ username: 1 }, { unique: true });
-userSchema.index({ email: 1 }, { unique: true });
 
 export default userSchema;

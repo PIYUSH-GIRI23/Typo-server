@@ -1,5 +1,5 @@
 import analyticsController from '../controllers/analyticsController.js';
-import middleware from '../middleware/authMiddleware.js';
+import middleware from '../middleware/middleware.js';
 import express from 'express';
 
 const router = express.Router();

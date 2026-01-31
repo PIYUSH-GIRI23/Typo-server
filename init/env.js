@@ -19,7 +19,7 @@ export const env = {
     mongoURI: isDevelopment ? process.env.LOCAL_MONGO_URI : process.env.CLOUD_MONGO_URI,
     
     jwt: {
-        secret: process.env.JWT_SECRET
+        secret: process.env.JWT_SECRET,
         accessTokenExpire: process.env.ACCESS_TOKEN_EXPIRE || '7d',
         accessTokenLongExpire: process.env.ACCESS_TOKEN_LONG_EXPIRE || '30d',
         refreshTokenExpire: process.env.REFRESH_TOKEN_EXPIRE || '90d',

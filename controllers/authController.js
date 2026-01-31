@@ -1,7 +1,7 @@
 import AppError from "../error/AppError.js";
 import errorHandler from "../error/errorHandler.js";
 import passwordHash from "../utils/passwordHash.js";
-import jwt from '../auth/jwt.js';
+import jwtHelper from '../auth/jwt.js';
 import authService from "../services/auth.service.js";
 import { setUsername } from "../redis/user.js";
 import { validateLoginInput, validateRegisterInput } from "../utils/authValidation.js";
@@ -29,7 +29,7 @@ const loginUser = async(req, res, next) => {
 
         await authService.updateLastLogin(user._id);
 
-        const tokens = jwt.generateTokens({ userId: user._id }, rememberMe);
+        const tokens = jwtHelper.generateTokens({ userId: user._id }, rememberMe);
 
         res.status(200).json({
             success: true,
@@ -92,7 +92,7 @@ const registerUser = async(req, res, next) => {
 
         await pushMailQueue(email, "signup", formatDateTime(Date.now()), 8);
 
-        const tokens = jwt.generateTokens({ userId: user._id }, rememberMe);
+        const tokens = jwtHelper.generateTokens({ userId: user._id }, rememberMe);
 
         res.status(201).json({
             success: true,

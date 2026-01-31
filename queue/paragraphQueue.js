@@ -6,7 +6,6 @@ const pushParagraphQueue = async (data, priority = 5) => {
     persistent: true,
     priority,
   });
-  console.log("Data pushed to paragraphQueue:", data);
 };
 
 export { pushParagraphQueue };

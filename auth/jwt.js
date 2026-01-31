@@ -97,9 +97,9 @@ const renewJWT = async (refreshToken, rememberMe = false) => {
     }
 };
 
-const jwt = {
+const jwtHelper = {
     generateTokens,
     verifyToken,
     renewJWT
 };
-export default jwt;
+export default jwtHelper;

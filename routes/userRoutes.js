@@ -1,6 +1,6 @@
 import authController from '../controllers/authController.js';
 import passwordController from '../controllers/passwordController.js';
-import userController from '../controllers/usernameController.js';
+import userController from '../controllers/userController.js';
 import middleware from '../middleware/middleware.js';
 import express from 'express';
 
@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/register', authController.registerUser);
 router.post('/login', authController.loginUser);
 
-router.push('/send-otp', passwordController.sendOTP);
+router.post('/send-otp', passwordController.sendOTP);
 router.post('/reset-password', passwordController.resetPassword);
 
 router.get('/check-username', userController.checkUsernameAvailability);
