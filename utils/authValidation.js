@@ -64,4 +64,29 @@ const validateRegisterInput = (payload) => {
   return { success: true, data: result.data };
 };
 
-export { validateLoginInput, validateRegisterInput };
+const validateUsername = (username) => {
+  const result = usernameSchema.safeParse(username);
+  if (!result.success) {
+    return { success: false, message: formatZodError(result.error) };
+  }
+  return { success: true, data: result.data };
+};
+
+const validateDeleteAccountInput = (payload) => {
+  const schema = z.object({
+    password: z.string().min(1, "Password is required"),
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  });
+  const result = schema.safeParse(payload);
+  if (!result.success) {
+    return { success: false, message: formatZodError(result.error) };
+  }
+  return { success: true, data: result.data };
+};
+
+export { 
+  validateLoginInput, 
+  validateRegisterInput, 
+  validateUsername, 
+  validateDeleteAccountInput 
+};
