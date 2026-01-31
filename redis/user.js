@@ -7,6 +7,13 @@ const isUsernamePresent = async (username) => {
   return exists === 1;
 };
 
+const setUsername = async (username, ttlSeconds = 60 * 60) => {
+  const redis = await connectRedis();
+  const key = `username:${username}`;
+  await redis.set(key, 1, "EX", ttlSeconds);
+  return 1;
+};
+
 const deleteUsernameKey = async (username) => {
   const redis = await connectRedis();
   const key = `username:${username}`;
@@ -16,7 +23,7 @@ const deleteUsernameKey = async (username) => {
 
 const setUserData = async (username, data) => {
   const redis = await connectRedis();
-  const key = `username:${username}`;
+  const key = `userdata:${username}`;
   // expect data to be an object like { accuracy: '', wpm: '' }
   await redis.set(key, JSON.stringify(data));
   return data;
@@ -24,7 +31,7 @@ const setUserData = async (username, data) => {
 
 const updateUserData = async (username, updates) => {
   const redis = await connectRedis();
-  const key = `username:${username}`;
+  const key = `userdata:${username}`;
   const existing = await redis.get(key);
   let obj = {};
   if (existing) {
@@ -66,6 +73,7 @@ const getLeaderboard = async () => {
 
 export {
   isUsernamePresent,
+  setUsername,
   deleteUsernameKey,
   setUserData,
   updateUserData,
