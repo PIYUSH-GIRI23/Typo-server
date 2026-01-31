@@ -1,4 +1,4 @@
-import jwt from './jwt.js';
+import jwt from '../auth/jwt.js';
 
 export const middleware = async(req,res,next)=>{
     try{
