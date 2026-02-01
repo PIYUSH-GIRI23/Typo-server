@@ -1,9 +1,11 @@
 import express from 'express';
+import cron from 'node-cron';
 import { env } from './init/env.js';
 import { connectDB, setupDBSignalHandlers } from './init/db.js';
 import { connectMQ, setupMQSignalHandlers } from './init/queue.js';
 import { connectRedis, setupRedisSignalHandlers } from './init/redis.js';
 import { loadParagraphsToQueue } from './helper/paragraphLoader.js';
+import leaderboard  from './helper/leaderboardHelper.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
@@ -30,6 +32,23 @@ const startServer = async () => {
     setupRedisSignalHandlers();
 
     await loadParagraphsToQueue();
+
+    // Initialize leaderboard on startup
+    console.log('Generating initial leaderboard...');
+    await leaderboard.generateLeaderboard();
+
+    // Setup Cron Job for periodic leaderboard refresh
+    // Run leaderboard update every 30 minutes (0 and 30 minute mark each hour)
+    // cron.schedule('0,30 * * * *', async () => {
+    //   try {
+    //     console.log('[CRON] Updating leaderboard...');
+    //     await leaderboard.generateLeaderboard();
+    //   } catch (error) {
+    //     console.error('[CRON] Failed to update leaderboard:', error.message);
+    //   }
+    // });
+
+    // console.log('✓ Cron job scheduled: Leaderboard updates every 30 minutes');
 
     app.listen(env.port, () => {
       console.log(`✓ Server running on port ${env.port}`);
