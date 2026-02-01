@@ -5,7 +5,6 @@ let connection = null;
 let channel = null;
 
 const MAIL_QUEUE = "mailQueue";
-const USER_QUEUE = "userQueue";
 const PARAGRAPH_QUEUE = "paragraphQueue";
 
 const connectMQ = async () => {
@@ -20,7 +19,6 @@ const connectMQ = async () => {
   channel = await connection.createChannel();
 
   await channel.assertQueue(MAIL_QUEUE, { durable: true, maxPriority: 10 });
-  await channel.assertQueue(USER_QUEUE, { durable: true, maxPriority: 10 });
   await channel.assertQueue(PARAGRAPH_QUEUE, { durable: true, maxPriority: 10 });
 
   return channel;
@@ -54,6 +52,5 @@ export {
   stopMQ,
   setupMQSignalHandlers,
   MAIL_QUEUE,
-  USER_QUEUE,
   PARAGRAPH_QUEUE,
 };
