@@ -2,7 +2,6 @@ import AppError from "../error/AppError.js";
 import analyticsService from "../services/analytics.service.js";
 import errorHandler from "../error/errorHandler.js";
 import formatDateTime from "../utils/formatDateTIme.js";
-import { pushUserQueue } from "../queue/userQueue.js";
 
 const getUserAnalytics = async(req, res, next) => {
     try {
@@ -31,13 +30,6 @@ const getUserAnalytics = async(req, res, next) => {
             totalPar: analytics.totalPar,
             maxStreak: analytics.maxStreak
         };
-
-        await pushUserQueue(
-            "set-analytics",
-            userData.username,
-            {wpm:analyticsData.wpm, accuracy:analyticsData.accuracy },
-            formatDateTime(Date.now())
-        );
         
         res.status(200).json({
             success: true,
