@@ -1,4 +1,6 @@
 import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
 import cron from 'node-cron';
 import { env } from './init/env.js';
 import { connectDB, setupDBSignalHandlers } from './init/db.js';
@@ -12,6 +14,11 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 
 const app = express();
 
+app.use(helmet());
+app.use(cors({
+  origin: env.clientUrl,
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/api/users', userRoutes);

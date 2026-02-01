@@ -15,6 +15,7 @@ const isDevelopment = ENV === 'development';
 export const env = {
     env: ENV,
     port: parseInt(process.env.PORT) || 8080,
+    clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
 
     mongoURI: isDevelopment ? process.env.LOCAL_MONGO_URI : process.env.CLOUD_MONGO_URI,
     
