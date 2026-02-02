@@ -28,7 +28,8 @@ const getUserAnalytics = async(req, res, next) => {
                 ? formatDateTime(analytics.lastTestTaken) 
                 : null,
             totalPar: analytics.totalPar,
-            maxStreak: analytics.maxStreak
+            maxStreak: analytics.maxStreak,
+            progress: analytics.progress
         };
         
         res.status(200).json({
@@ -49,7 +50,6 @@ const updateAnalytics = async(req, res, next) => {
         const { userId } = req.params;
         const { wpm, accuracy, testTimings, maxStreak, lastTestTaken } = req.body;
         
-        // Validate required fields
         if (!wpm || !accuracy || testTimings === undefined || !maxStreak || !lastTestTaken) {
             return next(new AppError("Missing required fields: wpm, accuracy, testTimings, maxStreak, lastTestTaken", 400));
         }
