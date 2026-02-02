@@ -21,6 +21,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.get('/', async(req, res) => {
+  console.log('Generating leaderboard on / request...');
+  await leaderboard.generateLeaderboard(); // use crom job later
+  console.log('Leaderboard generated successfully.');
+  res.json({ 
+    status: 'ok', 
+    message: 'Typo Server is running', 
+    timestamp: new Date().toISOString() 
+  });
+});
+
 app.use('/api/users', userRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
