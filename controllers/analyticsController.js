@@ -2,23 +2,19 @@ import AppError from "../error/AppError.js";
 import analyticsService from "../services/analytics.service.js";
 import errorHandler from "../error/errorHandler.js";
 import formatDateTime from "../utils/formatDateTIme.js";
-
+import { validateUsername } from "../utils/authValidation.js";
+import { setUsername } from "../redis/user.js";
 const getUserAnalytics = async(req, res, next) => {
     try {
-        const { userId } = req.params;
+        const userId = req.userId;
         const analytics = await analyticsService.getAnalytics(userId);
         
         if (!analytics) {
             return next(new AppError("Analytics not found", 404));
         }
         
-        const userData = {
-            ...analytics.userData.toObject(),
-            lastLogin: analytics.userData.lastLogin 
-                ? formatDateTime(analytics.userData.lastLogin) 
-                : null
-        };
-        delete userData._id;
+        const userData = analytics.userId?.toObject?.() ?? analytics.userId;
+        if (userData && userData._id) delete userData._id;
         
         const analyticsData = {
             wpm: analytics.wpm,
@@ -47,7 +43,7 @@ const getUserAnalytics = async(req, res, next) => {
 
 const updateAnalytics = async(req, res, next) => {
     try {
-        const { userId } = req.params;
+        const userId  = req.userId;
         const { wpm, accuracy, testTimings, maxStreak, lastTestTaken } = req.body;
         
         if (!wpm || !accuracy || testTimings === undefined || !maxStreak || !lastTestTaken) {
@@ -79,8 +75,7 @@ const updateAnalytics = async(req, res, next) => {
 
 const resetAnalytics = async (req, res, next) => {
   try {
-    const { userId } = req.params;
-
+    const userId  = req.userId;
     const analytics = await analyticsService.resetAnalytics(userId);
 
     if (!analytics) {
@@ -99,12 +94,20 @@ const resetAnalytics = async (req, res, next) => {
 
 const getAccountAnalytics = async (req, res, next) => {
     try{
-        const {username} = req.params;
-        const analytics = await analyticsService.getAccountAnalytics(username);
+        const { username } = req.query;
+        
+        const validation = validateUsername(username);
+        if (!validation.success) {
+            return next(new AppError(validation.message, 400));
+        }
+
+        const analytics = await analyticsService.getAccountAnalytics(validation.data);
 
         if(!analytics){
             return next (new AppError("Analytics not found", 404));
         }
+
+        await setUsername(username);
         res.status(200).json({
             success: true,
             data: analytics
