@@ -32,8 +32,6 @@ const checkUsernameAvailability = async (req, res, next) => {
             });
         }
 
-        await setUsername(validatedUsername);
-
         res.status(200).json({
             success: true,
             available: true,
