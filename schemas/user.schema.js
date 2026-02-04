@@ -47,12 +47,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minlength: 8,
-      maxlength: 50,
-      validate: {
-        validator: (value) => regex.PASSWORD_REGEX.test(value),
-        message: () => `Password does not meet complexity rules!`
-      }
+      minlength: 8
     },
 
     lastLogin: {
