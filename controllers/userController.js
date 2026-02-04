@@ -25,6 +25,7 @@ const checkUsernameAvailability = async (req, res, next) => {
         const exists = await userService.checkUsernameExists(validatedUsername);
 
         if (exists) {
+            await setUsername(validatedUsername);
             return res.status(200).json({
                 success: true,
                 available: false,
@@ -61,6 +62,7 @@ const changeUsername = async (req, res, next) => {
 
         const exists = await userService.checkUsernameExists(validatedUsername);
         if (exists) {
+            await setUsername(validatedUsername);
             return next(new AppError("Username is already taken", 409));
         }
 

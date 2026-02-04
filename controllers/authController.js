@@ -28,6 +28,7 @@ const loginUser = async(req, res, next) => {
         }
 
         await authService.updateLastLogin(user._id);
+        await setUsername(user.username);
 
         const tokens = jwtHelper.generateTokens({ userId: user._id }, rememberMe);
 
