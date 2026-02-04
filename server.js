@@ -49,11 +49,10 @@ const startServer = async () => {
     setupMQSignalHandlers();
     setupRedisSignalHandlers();
 
+    console.log('Loading paragraphs into the queue...');
     await loadParagraphsToQueue();
+    console.log('Paragraphs loaded into the queue successfully');
 
-    // Initialize leaderboard on startup
-    console.log('Generating initial leaderboard...');
-    await leaderboard.generateLeaderboard();
 
     // Setup Cron Job for periodic leaderboard refresh
     // Run leaderboard update every 30 minutes (0 and 30 minute mark each hour)

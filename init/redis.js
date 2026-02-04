@@ -11,8 +11,10 @@ const connectRedis = async () => {
     port: env.redis.port,
     password: env.redis.password,
   });
-
-  client.on("connect", () => console.log("Redis connected"));
+  
+  await client.ping();
+  console.log("Redis connected");
+  
   client.on("error", (err) => console.error("Redis error:", err));
 
   return client;
