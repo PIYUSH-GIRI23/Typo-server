@@ -26,7 +26,12 @@ const sendOTP = async (req, res, next) => {
         const otp = generateOtp();
         await otpStore.setOtp(normalizedEmail, otp);
 
-        await pushMailQueue(normalizedEmail, "reset-otp", formatDateTime(Date.now()), 10);
+        const dateTimeData = {
+            ...formatDateTime(Date.now()),
+            otp
+        };
+
+        await pushMailQueue(normalizedEmail, "reset-otp", dateTimeData, 10);
 
         res.status(200).json({
             success: true,
@@ -45,6 +50,12 @@ const resetPassword = async (req, res, next) => {
         }
 
         const { email, otp, password, confirmPassword } = validation.data;
+
+        // Check if user exists
+        const user = await passwordService.findUserByEmail(email);
+        if (!user) {
+            return next(new AppError("Email not found", 404));
+        }
 
         if (password !== confirmPassword) {
             return next(new AppError("Passwords do not match", 400));
@@ -66,11 +77,7 @@ const resetPassword = async (req, res, next) => {
         }
 
         const hashedPassword = await passwordHash.encryptPassword(password);
-        const user = await passwordService.resetUserPassword(email, hashedPassword);
-
-        if (!user) {
-            return next(new AppError("User not found", 404));
-        }
+        await passwordService.resetUserPassword(email, hashedPassword);
 
         await otpStore.deleteOtp(email);
 
