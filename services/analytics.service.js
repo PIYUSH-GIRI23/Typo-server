@@ -1,9 +1,12 @@
 import Analytics from '../models/analytics.model.js';
 import User from '../models/user.model.js';
+import mongoose from 'mongoose';
 
 const resetAnalytics = async (userId) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) return null;
+  const formattedUserId = new mongoose.Types.ObjectId(userId);
   const analytics = await Analytics.findOneAndUpdate(
-    { userId },
+    { userId: formattedUserId },
     {
       wpm: 0,
       accuracy: 0,
@@ -19,20 +22,23 @@ const resetAnalytics = async (userId) => {
 };
 
 const getAnalytics = async (userId) => {
-  const analytics = await Analytics.findOne({ userId }).populate({
+  if (!mongoose.Types.ObjectId.isValid(userId)) return null;
+  const formattedUserId = new mongoose.Types.ObjectId(userId);
+  const analytics = await Analytics.findOne({ userId: formattedUserId }).populate({
     path: 'userId',
-    as: 'userData',
-    select: 'firstName lastName username email lastLogin'
+    select: 'firstName lastName username email lastLogin -_id'
   });
 
   return analytics;
 };
 
 const updateAnalytics = async (userId, payload) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) return null;
+  const formattedUserId = new mongoose.Types.ObjectId(userId);
   const { wpm, accuracy, testTimings, maxStreak, lastTestTaken } = payload;
 
   const today = new Date().toISOString().split('T')[0];
-  const currentAnalytics = await Analytics.findOne({ userId });
+  const currentAnalytics = await Analytics.findOne({ userId: formattedUserId });
 
   if (!currentAnalytics) return null;
   
@@ -67,7 +73,7 @@ const updateAnalytics = async (userId, payload) => {
 
   // Update analytics with new progress
   const analytics = await Analytics.findOneAndUpdate(
-    { userId },
+    { userId: formattedUserId },
     {
       wpm,
       accuracy,
