@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import Analytics from "../models/analytics.model.js";
 import regex from "../utils/regexValidation.js";
 
 const findUserByEmailOrUsername = async (identifier) => {
@@ -11,8 +12,15 @@ const findUserByEmailOrUsername = async (identifier) => {
 	});
 };
 
-const createUser = async (payload) => {
-	return User.create(payload);
+const createUser = async (userPayload, analyticsPayload) => {
+	const user = await User.create(userPayload);
+	
+	await Analytics.create({
+		userId: user._id,
+		...analyticsPayload
+	});
+	
+	return user;
 };
 
 const updateLastLogin = async (userId) => {

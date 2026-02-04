@@ -80,14 +80,26 @@ const registerUser = async(req, res, next) => {
 
         const hashedPassword = await passwordHash.encryptPassword(password);
 
-        const user = await authService.createUser({
+        const userPayload = {
             email,
             password: hashedPassword,
             firstName,
             lastName,
             username,
             lastLogin: Date.now()
-        });
+        };
+
+        const analyticsPayload = {
+            wpm: 0,
+            accuracy: 0,
+            testTimings: 0,
+            lastTestTaken: null,
+            totalPar: 0,
+            maxStreak: 0,
+            progress: []
+        };
+
+        const user = await authService.createUser(userPayload, analyticsPayload);
 
         await setUsername(username);
 
