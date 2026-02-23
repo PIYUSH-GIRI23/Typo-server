@@ -26,7 +26,7 @@ const getAnalytics = async (userId) => {
   const formattedUserId = new mongoose.Types.ObjectId(userId);
   const analytics = await Analytics.findOne({ userId: formattedUserId }).populate({
     path: 'userId',
-    select: 'firstName lastName username email lastLogin -_id'
+    select: 'firstName lastName username email lastLogin dateOfJoining -_id'
   });
 
   return analytics;
