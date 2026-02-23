@@ -1,7 +1,6 @@
 import AppError from "../error/AppError.js";
 import analyticsService from "../services/analytics.service.js";
 import errorHandler from "../error/errorHandler.js";
-import formatDateTime from "../utils/formatDateTIme.js";
 import { validateUsername } from "../utils/authValidation.js";
 import { setUsername } from "../redis/user.js";
 const getUserAnalytics = async(req, res, next) => {
@@ -20,9 +19,7 @@ const getUserAnalytics = async(req, res, next) => {
             wpm: analytics.wpm,
             accuracy: analytics.accuracy,
             testTimings: analytics.testTimings,
-            lastTestTaken: analytics.lastTestTaken 
-                ? formatDateTime(analytics.lastTestTaken) 
-                : null,
+            lastTestTaken: analytics.lastTestTaken,
             totalPar: analytics.totalPar,
             maxStreak: analytics.maxStreak,
             progress: analytics.progress
