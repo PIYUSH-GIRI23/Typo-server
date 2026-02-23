@@ -99,7 +99,7 @@ const deleteAccount = async (req, res, next) => {
             return next(new AppError("Passwords do not match", 400));
         }
 
-        const user = await authService.findUserByEmailOrUsername(userId);
+        const user = await userService.findUserById(userId);
         if (!user) {
             return next(new AppError("User not found", 404));
         }
