@@ -22,7 +22,7 @@ const deleteUserAccount = async (userId) => {
   
   try {
     const user = await User.findByIdAndDelete(userId);
-    
+
     if (user) {
       await Analytics.deleteOne({ userId });
     }
@@ -33,10 +33,15 @@ const deleteUserAccount = async (userId) => {
   }
 };
 
+const findUserById = async (userId) => {
+  if (!userId) return null;
+  return User.findById(userId).select("password email username");
+};
 const userService = {
   checkUsernameExists,
   updateUsername,
   deleteUserAccount,
+  findUserById
 };
 
 export default userService;
