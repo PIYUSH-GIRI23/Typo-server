@@ -37,46 +37,55 @@ const updateAnalytics = async (userId, payload) => {
   const formattedUserId = new mongoose.Types.ObjectId(userId);
   const { wpm, accuracy, testTimings, maxStreak, lastTestTaken } = payload;
 
-  const today = new Date().toISOString().split('T')[0];
-  const currentAnalytics = await Analytics.findOne({ userId: formattedUserId });
+  const floor2 = (num) => Math.floor(num * 100) / 100;
 
+  const safeWpm = floor2(wpm);
+  const safeAccuracy = floor2(accuracy);
+
+  const today = new Date().toLocaleDateString('en-CA');
+
+  const currentAnalytics = await Analytics.findOne({ userId: formattedUserId });
   if (!currentAnalytics) return null;
-  
-  let updatedProgress = [...currentAnalytics.progress];
-  
+
+  let updatedProgress = currentAnalytics.progress ? [...currentAnalytics.progress] : [];
+
   const lastEntry = updatedProgress[updatedProgress.length - 1];
   const isFirstTestToday = !lastEntry || lastEntry.date !== today;
 
   if (isFirstTestToday) {
-    const newEntry = { 
-      date: today, 
-      wpm, 
-      accuracy, 
-      count: 1 
+    const newEntry = {
+      date: today,
+      wpm: safeWpm,
+      accuracy: safeAccuracy,
+      count: 1
     };
-    
+
     if (updatedProgress.length >= 10) {
       updatedProgress.shift();
     }
-    
+
     updatedProgress.push(newEntry);
-  }
-  else {
-    // Update today's entry (last entry) with cumulative average
+  } else {
     const existingEntry = updatedProgress[updatedProgress.length - 1];
-    
+
     const newCount = existingEntry.count + 1;
-    existingEntry.wpm = (existingEntry.wpm * existingEntry.count + wpm) / newCount;
-    existingEntry.accuracy = (existingEntry.accuracy * existingEntry.count + accuracy) / newCount;
+
+    existingEntry.wpm = floor2(
+      (existingEntry.wpm * existingEntry.count + safeWpm) / newCount
+    );
+
+    existingEntry.accuracy = floor2(
+      (existingEntry.accuracy * existingEntry.count + safeAccuracy) / newCount
+    );
+
     existingEntry.count = newCount;
   }
 
-  // Update analytics with new progress
   const analytics = await Analytics.findOneAndUpdate(
     { userId: formattedUserId },
     {
-      wpm,
-      accuracy,
+      wpm: safeWpm,
+      accuracy: safeAccuracy,
       testTimings,
       maxStreak,
       lastTestTaken,
