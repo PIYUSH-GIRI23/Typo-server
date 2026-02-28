@@ -40,6 +40,7 @@ const analyticsSchema = new mongoose.Schema(
     },
     progress: [
       {
+        _id: false,
         date: {
           type: String, // YYYY-MM-DD
           required: true
