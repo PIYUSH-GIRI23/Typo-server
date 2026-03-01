@@ -3,10 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cron from 'node-cron';
 import { env } from './init/env.js';
-import { connectDB, setupDBSignalHandlers } from './init/db.js';
-import { connectMQ, setupMQSignalHandlers } from './init/queue.js';
-import { connectRedis, setupRedisSignalHandlers } from './init/redis.js';
-import { loadParagraphsToQueue } from './helper/paragraphLoader.js';
+import { connectDB, setupDBSignalHandlers, closeConnection } from './init/db.js';
+import { connectRedis, setupRedisSignalHandlers , stopRedis } from './init/redis.js';
 import leaderboard  from './helper/leaderboardHelper.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
@@ -41,18 +39,8 @@ const startServer = async () => {
   try {
     console.log('Connecting to services...');
     await connectDB();
-    await connectMQ();
     await connectRedis();
     console.log('All services connected successfully');
-
-    setupDBSignalHandlers();
-    setupMQSignalHandlers();
-    setupRedisSignalHandlers();
-
-    console.log('Loading paragraphs into the queue...');
-    await loadParagraphsToQueue();
-    console.log('Paragraphs loaded into the queue successfully');
-
 
     // Setup Cron Job for periodic leaderboard refresh
     // Run leaderboard update every 30 minutes (0 and 30 minute mark each hour)
@@ -77,4 +65,13 @@ const startServer = async () => {
   }
 };
 
+process.on('SIGINT', async () => {
+  console.log('🛑 Shutting down redis server...');
+  await stopRedis();
+  console.log('✅ Redis server stopped successfully');
+  console.log('🛑 Shutting down database connection...');
+  await closeConnection();
+  console.log('✅ Database connection closed successfully');
+  process.exit(0);
+});
 startServer();

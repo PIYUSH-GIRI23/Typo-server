@@ -6,7 +6,6 @@ import authService from "../services/auth.service.js";
 import analyticsService from "../services/analytics.service.js";
 import { setUsername } from "../redis/user.js";
 import { validateLoginInput, validateRegisterInput } from "../utils/authValidation.js";
-import { pushMailQueue } from "../queue/mailQueue.js";
 import formatDateTime from "../utils/formatDateTIme.js";
 
 const buildUserPayload = (user, analytics) => {
@@ -123,8 +122,6 @@ const registerUser = async(req, res, next) => {
         const user = await authService.createUser(userPayload, analyticsPayload);
 
         await setUsername(username);
-
-        await pushMailQueue(email, "signup", formatDateTime(Date.now()), 8);
 
         const analytics = await analyticsService.getAnalytics(user._id);
         const userPayloadResponse = buildUserPayload(user, analytics);

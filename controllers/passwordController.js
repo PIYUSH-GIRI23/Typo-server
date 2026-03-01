@@ -5,7 +5,6 @@ import { validateEmail, validateResetPasswordInput } from "../utils/authValidati
 import { generateOtp } from "../utils/otpUtil.js";
 import otpStore from "../redis/otp.js";
 import passwordHash from "../utils/passwordHash.js";
-import { pushMailQueue } from "../queue/mailQueue.js";
 import formatDateTime from "../utils/formatDateTIme.js";
 
 const sendOTP = async (req, res, next) => {
@@ -30,8 +29,6 @@ const sendOTP = async (req, res, next) => {
             ...formatDateTime(Date.now()),
             otp
         };
-
-        await pushMailQueue(normalizedEmail, "reset-otp", dateTimeData, 10);
 
         res.status(200).json({
             success: true,
