@@ -20,7 +20,9 @@ Typo uses **Redis** (via ioredis) as an in-memory cache for:
 - ⚡ Username availability tracking (prevent race conditions)
 - 🔐 OTP storage with automatic expiration
 - 📊 User analytics caching for fast leaderboard access
+- ⏱️ Rate limiting for authentication and analytics routes
 - ⏱️ Temporary data with TTL (Time-To-Live)
+
 
 ### Redis Statistics
 - **Host:** Configurable (local/cloud based on NODE_ENV)
@@ -88,24 +90,27 @@ export const stopRedis = async () => {
 
 ## Key Patterns
 
-Redis uses **namespaced keys** to organize data by type:
+Redis uses **namespaced keys** configured via environment variables to organize data by type:
 
 ### Key Namespace Structure
 
 ```
 typo_db:
-├── username:{username}        → Username availability cache
-├── otp:{email}                → Password reset OTPs
-└── leaderboard                → Cached leaderboard array
+├── typo:username:{username}               → Username availability cache (REDIS_USERNAME_KEY_PREFIX)
+├── typo:otp:{email}                       → Password reset OTPs (REDIS_OTP_KEY_PREFIX)
+├── typo:leaderboard                       → Cached leaderboard array (REDIS_LEADERBOARD_KEY)
+└── typo:ratelimit:<route>:<identifier>    → Route rate limits (REDIS_RATE_LIMIT_KEY_PREFIX)
 ```
 
 ### Key Naming Convention
 
-| Pattern | Example | Purpose | TTL |
-|---------|---------|---------|-----|
-| `username:{username}` | `username:johndoe` | Track username availability | 1 hour (3600s) |
-| `otp:{email}` | `otp:john@example.com` | Store OTP for password reset | 120 seconds |
-| `leaderboard` | `leaderboard` | Cached top users array | No expiry (manual invalidation) |
+| Pattern | Environment Variable | Default Example | Purpose | TTL |
+|---------|---------------------|-----------------|---------|-----|
+| `${REDIS_USERNAME_KEY_PREFIX}{username}` | `REDIS_USERNAME_KEY_PREFIX` | `typo:username:johndoe` | Track username availability | 1 hour (3600s) |
+| `${REDIS_OTP_KEY_PREFIX}{email}` | `REDIS_OTP_KEY_PREFIX` | `typo:otp:john@example.com` | Store OTP for password reset | 120 seconds |
+| `${REDIS_LEADERBOARD_KEY}` | `REDIS_LEADERBOARD_KEY` | `typo:leaderboard` | Cached top users array | No expiry (manual refresh) |
+| `${REDIS_RATE_LIMIT_KEY_PREFIX}{route}:{id}` | `REDIS_RATE_LIMIT_KEY_PREFIX` | `typo:ratelimit:auth:ip:127.0.0.1` | Route rate limiting counters | 60 seconds |
+
 
 ---
 

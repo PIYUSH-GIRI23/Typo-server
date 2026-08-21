@@ -3,7 +3,11 @@ import { connectRedis } from "../init/redis.js";
 const OTP_TTL_SECONDS = 120;
 const MAX_ATTEMPTS = 3;
 
-const getOtpKey = (email) => `otp:${email}`;
+const getOtpKey = (email) => {
+  const prefix = process.env.REDIS_OTP_KEY_PREFIX || "typo:otp:";
+  return `${prefix}${email}`;
+};
+
 
 const setOtp = async (email, otp, ttlSeconds = OTP_TTL_SECONDS) => {
   const redis = await connectRedis();

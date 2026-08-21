@@ -612,6 +612,8 @@ For questions or issues:
 - Open an issue on GitHub
 - Check [documentation](docs/)
 - Review [API reference](docs/API_ROUTES.md)
+- Review [Rate Limiter documentation](docs/RATE_LIMITER.md)
+
 
 ---
 
