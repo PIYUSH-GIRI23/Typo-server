@@ -6,8 +6,9 @@ import authService from "../services/auth.service.js";
 import analyticsService from "../services/analytics.service.js";
 import { setUsername } from "../redis/user.js";
 import { validateLoginInput, validateRegisterInput } from "../utils/authValidation.js";
-import { pushMailQueue } from "../queue/mailQueue.js";
+import { sendMail } from "../queue/mailQueue.js";
 import formatDateTime from "../utils/formatDateTIme.js";
+
 
 const buildUserPayload = (user, analytics) => {
     const analyticsData = analytics ? {
@@ -52,6 +53,11 @@ const loginUser = async(req, res, next) => {
 
         const updatedUser = await authService.updateLastLogin(user._id);
         await setUsername(user.username);
+
+        const displayName = user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.username;
+        const dateTimeData = { ...formatDateTime(Date.now()), name: displayName };
+        await sendMail(user.email, "login", dateTimeData, 6);
+
 
         const analytics = await analyticsService.getAnalytics(user._id);
         const userPayload = buildUserPayload(updatedUser || user, analytics);
@@ -124,7 +130,11 @@ const registerUser = async(req, res, next) => {
 
         await setUsername(username);
 
-        await pushMailQueue(email, "signup", formatDateTime(Date.now()), 8);
+        const displayName = firstName ? `${firstName} ${lastName || ''}`.trim() : username;
+        const dateTimeData = { ...formatDateTime(Date.now()), name: displayName };
+        await sendMail(email, "signup", dateTimeData, 8);
+
+
 
         const analytics = await analyticsService.getAnalytics(user._id);
         const userPayloadResponse = buildUserPayload(user, analytics);

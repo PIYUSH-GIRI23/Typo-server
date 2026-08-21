@@ -70,7 +70,8 @@ Typo Server is a comprehensive backend solution for a typing test application bu
 ### 📧 Async Operations
 
 - RabbitMQ message queues with priority support
-- Background email delivery (signup, delete, OTP)
+- Background email delivery (signup, login, reset password, OTP, delete account)
+
 - Paragraph content pre-loading on startup
 
 ---
@@ -278,13 +279,31 @@ WORD_KEY_EASY_SHORT=wes
 WORD_KEY_EASY_LONG=wel
 WORD_KEY_HARD_SHORT=whs
 WORD_KEY_HARD_LONG=whl
+
+# Mail Service & Queue Mode Configuration
+isQueueEnabled=true # Set to 'true' to use RabbitMQ queue mode, 'false' for direct HTTP API calls
+MAIL_SERVICE_URL=http://localhost:8081 # Auxiliary mail server endpoint, required when isQueueEnabled is false
 ```
+
+### Queue Mode vs. Direct REST API Mode
+
+Typo Server supports dual mail dispatch mechanisms controlled by `isQueueEnabled`:
+
+1. **Queue Mode (`isQueueEnabled=true`)**:
+   - Initializes RabbitMQ connection on server startup.
+   - Pushes email tasks asynchronously to `mailQueue`.
+   - Pre-loads paragraph data into `paragraphQueue`.
+
+2. **Direct REST API Mode (`isQueueEnabled=false`)**:
+   - Skips RabbitMQ initialization completely on startup.
+   - Dispatches email payloads directly via HTTP POST requests to `${MAIL_SERVICE_URL}/api/mail/send`.
 
 ### Environment Switching
 
 The app automatically switches between local and cloud services based on `NODE_ENV`:
 - `development`: Uses local services (MongoDB, Redis, RabbitMQ)
 - `production`: Uses cloud services
+
 
 ---
 

@@ -5,8 +5,9 @@ import { validateUsername, validateDeleteAccountInput } from "../utils/authValid
 import { setUsername } from "../redis/user.js";
 import passwordHash from "../utils/passwordHash.js";
 import authService from "../services/auth.service.js";
-import { pushMailQueue } from "../queue/mailQueue.js";
+import { sendMail } from "../queue/mailQueue.js";
 import formatDateTime from "../utils/formatDateTIme.js";
+
 
 const checkUsernameAvailability = async (req, res, next) => {
     try {
@@ -111,7 +112,11 @@ const deleteAccount = async (req, res, next) => {
 
         await userService.deleteUserAccount(userId);
 
-        await pushMailQueue(user.email, "delete", formatDateTime(Date.now()), 5);
+        const displayName = user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.username;
+        const dateTimeData = { ...formatDateTime(Date.now()), name: displayName };
+        await sendMail(user.email, "delete", dateTimeData, 5);
+
+
 
         res.status(200).json({
             success: true,

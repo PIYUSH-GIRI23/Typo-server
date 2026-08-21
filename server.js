@@ -54,17 +54,28 @@ const startServer = async () => {
   try {
     console.log('Connecting to services...');
     await connectDB();
-    await connectMQ();
+    if (env.isQueueEnabled) {
+      await connectMQ();
+    } else {
+      console.log('⚠️ RabbitMQ connection skipped because isQueueEnabled is false');
+    }
     await connectRedis();
     console.log('All services connected successfully');
 
     setupDBSignalHandlers();
-    setupMQSignalHandlers();
+    if (env.isQueueEnabled) {
+      setupMQSignalHandlers();
+    }
     setupRedisSignalHandlers();
 
-    console.log('Loading paragraphs into the queue...');
-    await loadParagraphsToQueue();
-    console.log('Paragraphs loaded into the queue successfully');
+    if (env.isQueueEnabled) {
+      console.log('Loading paragraphs into the queue...');
+      await loadParagraphsToQueue();
+      console.log('Paragraphs loaded into the queue successfully');
+    } else {
+      console.log('⚠️ Paragraph loading skipped because isQueueEnabled is false');
+    }
+
 
 
     // Setup Cron Job for periodic leaderboard refresh

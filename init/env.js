@@ -12,10 +12,18 @@ else{
 const ENV = process.env.NODE_ENV || 'development';
 const isDevelopment = ENV === 'development';
 
+const isQueueEnabled = 
+    process.env.isQueueEnabled === 'true' || 
+    (process.env.isQueueEnabled === undefined && isDevelopment);
+
+
 export const env = {
     env: ENV,
     port: parseInt(process.env.PORT) || 8080,
     clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
+    isQueueEnabled,
+    mailServiceUrl: process.env.MAIL_SERVICE_URL || 'http://localhost:8081',
+
 
     mongoURI: isDevelopment ? process.env.LOCAL_MONGO_URI : process.env.CLOUD_MONGO_URI,
     
