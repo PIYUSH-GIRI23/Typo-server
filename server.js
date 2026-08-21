@@ -21,15 +21,20 @@ app.use(cors({
 }));
 app.use(express.json());
 
-app.get('/', async(req, res) => {
-  console.log('Generating leaderboard on / request...');
-  await leaderboard.generateLeaderboard(); // use crom job later
-  console.log('Leaderboard generated successfully.');
-  res.json({ 
-    status: 'ok', 
-    message: 'Typo Server is running', 
-    timestamp: new Date().toISOString() 
-  });
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+app.get('/leaderboard', async (req, res, next) => { // ALTHOUGH , THERE IS A CRON JOB BUT YOU CAN ALSO USE THIS ROUTE TO POPULATE LEADERBOARD
+  try {
+    const data = await leaderboard.generateLeaderboard();
+    res.status(200).json({ 
+      status: 'ok', 
+      data 
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.use('/api/users', userRoutes);

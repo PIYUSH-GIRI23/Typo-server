@@ -1,5 +1,4 @@
 import Analytics from "../models/analytics.model.js";
-import User from "../models/user.model.js";
 import { setLeaderboard } from "../redis/user.js";
 
 const calculateScore = (wpm, accuracy) => {
