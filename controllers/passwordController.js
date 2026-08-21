@@ -7,6 +7,7 @@ import otpStore from "../redis/otp.js";
 import passwordHash from "../utils/passwordHash.js";
 import { sendMail } from "../queue/mailQueue.js";
 import formatDateTime from "../utils/formatDateTIme.js";
+import getDeviceInfo from "../utils/deviceInfo.js";
 
 const sendOTP = async (req, res, next) => {
     try {
@@ -27,13 +28,16 @@ const sendOTP = async (req, res, next) => {
         await otpStore.setOtp(normalizedEmail, otp);
 
         const displayName = user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.username;
+        const deviceInfo = getDeviceInfo(req);
         const dateTimeData = {
             ...formatDateTime(Date.now()),
             name: displayName,
-            otp
+            otp,
+            deviceInfo
         };
 
         await sendMail(normalizedEmail, "reset-otp", dateTimeData, 10);
+
 
         res.status(200).json({
             success: true,
@@ -84,11 +88,14 @@ const resetPassword = async (req, res, next) => {
         await otpStore.deleteOtp(email);
 
         const displayName = user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.username;
+        const deviceInfo = getDeviceInfo(req);
         const dateTimeData = {
             ...formatDateTime(Date.now()),
-            name: displayName
+            name: displayName,
+            deviceInfo
         };
         await sendMail(email, "resetPassword", dateTimeData, 7);
+
 
 
         res.status(200).json({

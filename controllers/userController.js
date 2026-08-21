@@ -7,6 +7,8 @@ import passwordHash from "../utils/passwordHash.js";
 import authService from "../services/auth.service.js";
 import { sendMail } from "../queue/mailQueue.js";
 import formatDateTime from "../utils/formatDateTIme.js";
+import getDeviceInfo from "../utils/deviceInfo.js";
+
 
 
 const checkUsernameAvailability = async (req, res, next) => {
@@ -113,8 +115,10 @@ const deleteAccount = async (req, res, next) => {
         await userService.deleteUserAccount(userId);
 
         const displayName = user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.username;
-        const dateTimeData = { ...formatDateTime(Date.now()), name: displayName };
+        const deviceInfo = getDeviceInfo(req);
+        const dateTimeData = { ...formatDateTime(Date.now()), name: displayName, deviceInfo };
         await sendMail(user.email, "delete", dateTimeData, 5);
+
 
 
 

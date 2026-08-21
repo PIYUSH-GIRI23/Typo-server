@@ -8,6 +8,8 @@ import { setUsername } from "../redis/user.js";
 import { validateLoginInput, validateRegisterInput } from "../utils/authValidation.js";
 import { sendMail } from "../queue/mailQueue.js";
 import formatDateTime from "../utils/formatDateTIme.js";
+import getDeviceInfo from "../utils/deviceInfo.js";
+
 
 
 const buildUserPayload = (user, analytics) => {
@@ -55,8 +57,10 @@ const loginUser = async(req, res, next) => {
         await setUsername(user.username);
 
         const displayName = user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.username;
-        const dateTimeData = { ...formatDateTime(Date.now()), name: displayName };
+        const deviceInfo = getDeviceInfo(req);
+        const dateTimeData = { ...formatDateTime(Date.now()), name: displayName, deviceInfo };
         await sendMail(user.email, "login", dateTimeData, 6);
+
 
 
         const analytics = await analyticsService.getAnalytics(user._id);
@@ -131,8 +135,10 @@ const registerUser = async(req, res, next) => {
         await setUsername(username);
 
         const displayName = firstName ? `${firstName} ${lastName || ''}`.trim() : username;
-        const dateTimeData = { ...formatDateTime(Date.now()), name: displayName };
+        const deviceInfo = getDeviceInfo(req);
+        const dateTimeData = { ...formatDateTime(Date.now()), name: displayName, deviceInfo };
         await sendMail(email, "signup", dateTimeData, 8);
+
 
 
 
