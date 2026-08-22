@@ -43,6 +43,7 @@ export function getDeviceInfo(req) {
 
 function getIpAddress(req) {
   const ip =
+    req.headers['cf-connecting-ip'] ||
     req.headers['x-vercel-forwarded-for'] ||
     req.headers['x-forwarded-for'] ||
     req.headers['x-real-ip'] ||
