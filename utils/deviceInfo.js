@@ -43,7 +43,7 @@ export function getDeviceInfo(req) {
 }
 
 function getIpAddress(req) {
-  const ip =
+  const rawIp =
     req.headers['cf-connecting-ip'] ||
     req.headers['x-vercel-forwarded-for'] ||
     req.headers['x-forwarded-for'] ||
@@ -51,9 +51,15 @@ function getIpAddress(req) {
     req.connection?.remoteAddress ||
     req.socket?.remoteAddress;
 
-  const cleanedIp = ip ? ip.split(',')[0].trim() : 'Unknown';
+  if (!rawIp) return 'Unknown';
 
-  return cleanedIp.replace(/^.*:/, '');
+  let cleanedIp = rawIp.split(',')[0].trim();
+
+  if (cleanedIp.startsWith('::ffff:')) {
+    cleanedIp = cleanedIp.replace('::ffff:', '');
+  }
+
+  return cleanedIp;
 }
 
 export default getDeviceInfo;
