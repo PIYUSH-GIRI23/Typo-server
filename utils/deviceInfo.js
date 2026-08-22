@@ -11,10 +11,11 @@ export function getDeviceInfo(req) {
     timezone: 'Unknown'
   };
 
-  const ua = new UAParser(req.headers['user-agent']);
-  const browser = ua.getBrowser();
-  const os = ua.getOS();
-  const device = ua.getDevice();
+  const userAgentStr = req.headers['user-agent'] || req.headers['User-Agent'] || '';
+  const parsedUa = UAParser(userAgentStr);
+  const browser = parsedUa.browser || {};
+  const os = parsedUa.os || {};
+  const device = parsedUa.device || {};
 
   return {
     ip,
@@ -37,7 +38,7 @@ export function getDeviceInfo(req) {
       vendor: device.vendor || 'Unknown',
       model: device.model || 'Unknown'
     },
-    userAgent: req.headers['user-agent'] || 'Unknown'
+    userAgent: userAgentStr || 'Unknown'
   };
 }
 
